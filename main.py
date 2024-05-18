@@ -3,6 +3,7 @@ import numpy as np
 import scipy as sc
 import pyvista as pv
 from solutions import Solucoes
+import matplotlib.pyplot as plt
 
 # -------------------------------- Read Excel ------------------------------------
 url = r'./5x5.xlsx'
@@ -14,7 +15,7 @@ quantidade_abas = len(abas)
 nx, my, kz = quantidade_abas, quantidade_abas, quantidade_abas
 
 # --------------------------------- Constantes -----------------------------------
-bloco_poco_produt = 124
+bloco_poco_produt = nx * my * kz-1
 pi = 1300
 pwf = -900
 rw = 0.25
@@ -58,10 +59,8 @@ sargs = dict(height=0.7, width=0.1, vertical=True, position_x=0.8, position_y=0.
              title_font_size=20, color="black", label_font_size=15)
 
 plotter.add_mesh(grid, show_edges=True, cmap='jet', scalar_bar_args=sargs, smooth_shading=True)
-plotter.add_text('Permeability [D]', position='upper_left', font_size=12, color='black')
+plotter.add_text('Permeability [mD]', position='upper_left', font_size=12, color='black')
 plotter.show()
-
-
 
 # ----------------- Inicializa as variáveis da classe -----------------------------
 var = Solucoes(pi, pwf, mi, k, phi, ct, rw, req, c_pb, b, lx, ly, lz, rx, ry, rz, bx, by, bz, nx, my, kz, delta_x,
@@ -105,10 +104,16 @@ Bo = 1
 t_final = 5
 vet_tempo = np.arange(0, t_final, delta_t)
 b = np.zeros(shape=(nx * my * kz))
-times_to_plot = [0, 3500, 6000, 9500]  # Tempo pra criar os subplots
+times_to_plot = [0, 2500, 5000, 9500]  # Tempo pra criar os subplots
 plots = []
+Q_total = []
 
 for t in range(len(vet_tempo)):
+
+    # calculando a produção acumulada
+    q_total = (((k[bloco_poco_produt])*h*2*np.pi)*c_pb /
+               (mi*Bo*np.log(req/rw)))*(press_t[bloco_poco_produt]-pwf)
+    Q_total.append(q_total)
 
     # montando o vetor b
     for i in range(nx * my * kz):
@@ -145,3 +150,14 @@ for i, grid in enumerate(plots):
 
 plotter.link_views()
 plotter.show()
+
+# ----------------------------- Plot Produção Acumulada -------------------------------
+Q_total = Q_total[3: len(Q_total)]
+x = np.arange(0, len(Q_total), 1)
+plt.plot(x, Q_total)
+plt.title('Produção acumulada [m³]')
+plt.xlabel("Tempo [s]")
+plt.ylabel("Vazão acumulada [m³/s]")
+plt.grid()
+plt.show()
+

@@ -11,7 +11,7 @@ class Solucoes:
             pi (float): Pressão inicial [kgf/cm²].
             pwf (float): Pressão no poço [kgf/cm²].
             mi (float): Viscosidade do fluido [cP].
-            k (float): Permeabilidade [D].
+            k (float): Permeabilidade [mD].
             phi (float): Porosidade [-].
             ct (float): Compressibilidade total [(kgf/cm²)^-1].
             rw (float): Raio do poço [m].
@@ -19,8 +19,8 @@ class Solucoes:
             c_pb (float): Constante Petrobras.
             b (float): Beta.
             lx, ly, lz (float): Comprimento do reservatório [m].
-            rx, ry, rz (float): Constantes.
-            bx, by, bz (float): Constantes.
+            rx, ry, rz (float): Variável auxiliar.
+            bx, by, bz (float): Variável auxiliar.
             nx, my, kz (float): Quantidade de blocos em x, y e z.
             delta_x, delta_y, delta_z (float): Discretização do reservatório para x, y e z.
             delta_t (float): Discretização do tempo.
@@ -52,7 +52,7 @@ class Solucoes:
         Calcula a matriz A de pressão em cada bloco.
 
         Returns:
-            list: Lista de pressões calculadas.
+            ndarray: Matriz de pressões calculadas.
         """
         A = np.zeros(shape=(self.nx * self.my * self.kz, self.nx * self.my * self.kz))
 
